@@ -10,6 +10,8 @@ import org.openimaj.image.typography.hershey.HersheyFont;
 /**
  * OpenIMAJ Hello world!
  *
+ * Test Commit -Martins
+ * 
  */
 public class App {
     public static void main( String[] args ) {
