@@ -1,6 +1,7 @@
 package ukuk.ac.soton.ecs.grp;
 
 import org.apache.commons.vfs2.FileSystemException;
+import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
@@ -15,6 +16,7 @@ public class App {
 
     static {
         try {
+            //GroupedDataset<String, VFSListDataset<Record<FImage>>, Record<FImage>>
             trainingData = new VFSListDataset<FImage>("zip:" + trainingPath, ImageUtilities.FIMAGE_READER);
             testingData = new VFSListDataset<FImage>("zip:" + testingPath, ImageUtilities.FIMAGE_READER);
         } catch (FileSystemException e) {
