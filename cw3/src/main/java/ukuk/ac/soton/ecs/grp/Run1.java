@@ -29,6 +29,7 @@ public class Run1 {
         DisplayUtilities.display("crop", cropImage(App.randomInstanceTest, 16));
         System.out.println(Arrays.toString(vectoriser(cropImage(App.randomInstanceTest, 16))));
         System.out.println(mapVector(App.trainingData));
+        System.out.println(App.trainingData.get(App.randomInstanceTrain));
         System.out.println(KNNClassifier(cropImage(App.randomInstanceTrain,16), mapVector(App.trainingData), 3));
     }
 
@@ -78,6 +79,8 @@ public class Run1 {
                 }
             }
         }
+        System.out.println(distanceMap.toString());
+
         float minVal = Float.MAX_VALUE;
         for (Float value : distanceMap.keySet()){
             if (minVal > value){
@@ -92,10 +95,11 @@ public class Run1 {
                 frequencyMap.put(name, 1);
             }
         }
+        System.out.println (frequencyMap.toString());
         String mostFrequent = null;
         int highestFrequency = 0;
         for (String name : frequencyMap.keySet()){
-            if (frequencyMap.get(name) < highestFrequency){
+            if (frequencyMap.get(name) > highestFrequency){
                 mostFrequent = name;
                 highestFrequency = frequencyMap.get(name);
             }
