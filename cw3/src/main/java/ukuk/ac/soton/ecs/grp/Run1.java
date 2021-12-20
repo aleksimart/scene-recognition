@@ -31,16 +31,16 @@ public class Run1 {
                 new GroupedRandomSplitter<String,FImage>(App.trainingData ,90 , 0, 10);
         DisplayUtilities.display("original", App.randomInstanceTest);
         DisplayUtilities.display("crop", cropImage(App.randomInstanceTest, 16));
-        System.out.println(Arrays.toString(vectoriser(cropImage(App.randomInstanceTest, 16))));
-        //Map<String, float[][]> trainingVectors = mapVector(App.trainingData);
-        Map<String, float[][]> trainingVectors = mapVector(splits.getTrainingDataset());
-        System.out.println(Arrays.toString(App.testingData.getFileObjects()));
-        int incorrect = 0;
+        //System.out.println(Arrays.toString(vectoriser(cropImage(App.randomInstanceTest, 16))));
+        Map<String, float[][]> trainingVectors = mapVector(App.trainingData);
+        //Map<String, float[][]> trainingVectors = mapVector(splits.getTrainingDataset());
+        //System.out.println(Arrays.toString(App.testingData.getFileObjects()));
+        /*int incorrect = 0;
         int correct = 0;
         for (Map.Entry<String, ListDataset<FImage>> testImage: splits.getTestDataset().entrySet() ){
             for (FImage randomInstance : testImage.getValue()) {
                 System.out.println(testImage.getKey());
-                        String prediction = KNNClassifier(cropImage(randomInstance, 16), trainingVectors, 1);
+                        String prediction = KNNClassifier(cropImage(randomInstance, 16), trainingVectors, 3);
                 System.out.println(prediction);
                 if (prediction.equals(testImage.getKey()))
                     correct++;
@@ -49,6 +49,10 @@ public class Run1 {
             }
         }
         System.out.println(correct + " " + incorrect);
+         */
+        for (FImage image : App.testingData){
+            System.out.println(KNNClassifier(cropImage(image, 16), trainingVectors, 3));
+        }
     }
     //cropping image to a square about the centre
     private static FImage cropImage(FImage fullSized, int imageSize) {
@@ -58,7 +62,19 @@ public class Run1 {
         } else {
             squareImage = fullSized.extractCenter(fullSized.height, fullSized.height);
         }
-        return ResizeProcessor.resample(squareImage, imageSize, imageSize);
+        FImage croppedImage = ResizeProcessor.resample(squareImage, imageSize, imageSize);
+        return croppedImage.subtract(averageFloat(croppedImage)).normalise();
+    }
+
+    private static float averageFloat(FImage inputImage){
+        float[][] pixels = inputImage.pixels;
+        float sum = 0;
+        for (float[] pixel : pixels) {
+            for (int y = 0; y < pixels[0].length; y++) {
+                sum += pixel[y];
+            }
+        }
+        return sum / (pixels.length * pixels[1].length);
     }
 
     private static Map<String, float[][]> mapVector(GroupedDataset<String, ListDataset<FImage>, FImage> groupedData) {
@@ -112,7 +128,7 @@ public class Run1 {
                 }
             }
         }
-        System.out.println(distanceMap.toString());
+        //System.out.println(distanceMap.toString());
 
         float minVal = Float.MAX_VALUE;
         for (Float value : distanceMap.keySet()){
@@ -128,7 +144,7 @@ public class Run1 {
                 frequencyMap.put(name, 1);
             }
         }
-        System.out.println (frequencyMap.toString());
+        //System.out.println (frequencyMap.toString());
         String mostFrequent = null;
         int highestFrequency = 0;
         for (String name : frequencyMap.keySet()){
