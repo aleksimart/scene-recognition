@@ -51,6 +51,12 @@ public class Run1 {
         System.out.println(correct + " " + incorrect);
          */
         for (FImage image : App.testingData){
+            System.out.println(image.getHeight());
+            System.out.println(image.getWidth());
+        }
+        for (FImage image : App.testingData){
+            System.out.println(image.getHeight());
+            System.out.println(image.getWidth());
             System.out.println(KNNClassifier(cropImage(image, 16), trainingVectors, 3));
         }
     }
@@ -66,7 +72,7 @@ public class Run1 {
         return croppedImage.subtract(averageFloat(croppedImage)).normalise();
     }
 
-    private static float averageFloat(FImage inputImage){
+    public static float averageFloat(FImage inputImage){
         float[][] pixels = inputImage.pixels;
         float sum = 0;
         for (float[] pixel : pixels) {
