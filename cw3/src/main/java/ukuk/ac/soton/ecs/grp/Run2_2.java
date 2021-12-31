@@ -1,11 +1,14 @@
 package ukuk.ac.soton.ecs.grp;
 
 
-import org.openimaj.feature.DoubleFV;
+import de.bwaldvogel.liblinear.SolverType;
 import org.openimaj.feature.FeatureExtractor;
+import org.openimaj.feature.SparseIntFV;
 import org.openimaj.image.FImage;
+import org.openimaj.image.feature.local.aggregate.BagOfVisualWords;
 import org.openimaj.image.pixel.sampling.RectangleSampler;
 import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.ml.annotation.linear.LiblinearAnnotator;
 import org.openimaj.ml.clustering.FloatCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
 import org.openimaj.ml.clustering.kmeans.FloatKMeans;
@@ -19,10 +22,15 @@ public class Run2_2 {
 
 
     public static void main (String[] args){
-        KMeansClustering(getPatches(App.randomInstanceTest, 4, 8));
+        List<float[]> patches = getPatches(App.randomInstanceTest, 4, 8);
+        HardAssigner<float[], float[], IntFloatPair> assigner = KMeansClustering(patches.toArray(new float[patches.size()][]));
+        BOVWExtractor extractor = new BOVWExtractor(assigner);
+        LiblinearAnnotator<FImage, String> annotator = new LiblinearAnnotator<FImage, String>(
+               extractor , LiblinearAnnotator.Mode.MULTICLASS, SolverType.L2R_L2LOSS_SVC, 1.0, 0.00001 );
+        annotator.train( App.trainingData );
     }
 
-    private static float[][] getPatches(FImage inputImage, int frequency, int patchsize){
+    private static List<float[]> getPatches(FImage inputImage, int frequency, int patchsize){
         RectangleSampler sampler = new RectangleSampler(inputImage, frequency, frequency, patchsize, patchsize);
         List<Rectangle> rectangles = sampler.allRectangles();
 
@@ -35,30 +43,29 @@ public class Run2_2 {
             vectors.add(imagePatch.getFloatPixelVector());
         }
         float[][] arr = new float[vectors.size()][];
-        return vectors.toArray(arr);
+        return vectors;
     }
 
-    private static void KMeansClustering(float[][] floatPatches){
+    private static HardAssigner<float[], float[], IntFloatPair> KMeansClustering(float[][] floatPatches){
         final FloatKMeans kMeans =  FloatKMeans.createExact(500);
         FloatCentroidsResult result = kMeans.cluster(floatPatches);
-        float[][] centroids = result.centroids;
-
-        for (float[] fs : centroids) {
-            System.out.println(Arrays.toString(fs));
-        }
+        HardAssigner<float[], float[], IntFloatPair> hardAssigner =  result.defaultHardAssigner();
+        return hardAssigner;
     }
 
-    static class BOVWExtractor implements FeatureExtractor<DoubleFV, FImage> {
+    static class BOVWExtractor implements FeatureExtractor<SparseIntFV, FImage> {
+        HardAssigner<float[], float[], IntFloatPair> assigner;
 
-        HardAssigner<byte[], float[], IntFloatPair> assigner;
-
-        public BOVWExtractor(HardAssigner<byte[], float[], IntFloatPair> assigner) {
+        BOVWExtractor(HardAssigner<float[], float[], IntFloatPair> assigner){
             this.assigner = assigner;
         }
 
         @Override
-        public DoubleFV extractFeature(FImage object) {
-            K
+        public SparseIntFV extractFeature(FImage object) {
+            List<float[]> imageFeatureVectors = getPatches(object, 4,8 );
+            BagOfVisualWords<float[]> bovw = new BagOfVisualWords<float[]>( assigner );
+            return bovw.aggregateVectorsRaw( imageFeatureVectors );
         }
+
     }
 }
