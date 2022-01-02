@@ -4,6 +4,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
+import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
@@ -15,11 +16,14 @@ public class App {
 
     static VFSGroupDataset<FImage> trainingData;
     static VFSListDataset<FImage> testingData;
+    static GroupedRandomSplitter<String, FImage> splits;
 
     static {
         try {
             //GroupedDataset<String, VFSListDataset<Record<FImage>>, Record<FImage>>
             trainingData = new VFSGroupDataset<FImage>("zip:" + trainingPath + "!training/", ImageUtilities.FIMAGE_READER);
+            splits = new GroupedRandomSplitter<String, FImage>(trainingData, 15, 0, 15);
+
             testingData = new VFSListDataset<FImage>("zip:" + testingPath, ImageUtilities.FIMAGE_READER);
         } catch (FileSystemException e) {
             e.printStackTrace();
@@ -28,4 +32,5 @@ public class App {
 
     static FImage randomInstanceTrain = trainingData.getRandomInstance();
     static FImage randomInstanceTest = testingData.getRandomInstance();
+
 }

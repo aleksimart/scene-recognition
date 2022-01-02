@@ -18,6 +18,9 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.image.typography.hershey.HersheyFont;
 
 import javax.sound.midi.SysexMessage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,37 +31,39 @@ import java.util.Map;
 public class Run1 {
     public static void main(String[] args) throws FileSystemException {
         GroupedRandomSplitter<String, FImage> splits =
-                new GroupedRandomSplitter<String,FImage>(App.trainingData ,90 , 0, 10);
-        DisplayUtilities.display("original", App.randomInstanceTest);
-        DisplayUtilities.display("crop", cropImage(App.randomInstanceTest, 16));
+                new GroupedRandomSplitter<String,FImage>(App.trainingData ,15 , 0, 15);
+        //DisplayUtilities.display("original", App.randomInstanceTest);
+        //DisplayUtilities.display("crop", cropImage(App.randomInstanceTest, 16));
         //System.out.println(Arrays.toString(vectoriser(cropImage(App.randomInstanceTest, 16))));
         Map<String, float[][]> trainingVectors = mapVector(App.trainingData);
         //Map<String, float[][]> trainingVectors = mapVector(splits.getTrainingDataset());
         //System.out.println(Arrays.toString(App.testingData.getFileObjects()));
-        /*int incorrect = 0;
+        int incorrect = 0;
         int correct = 0;
-        for (Map.Entry<String, ListDataset<FImage>> testImage: splits.getTestDataset().entrySet() ){
+        try {
+            PrintWriter printWriter = new PrintWriter(new File("run1.txt"));
+            for (int i = 0; i < App.testingData.size(); i++){
+                //System.out.println(image.getHeight());
+                //System.out.println(image.getWidth());
+                printWriter.println(App.testingData.getID(i).substring(8) +  " " + KNNClassifier(cropImage(App.testingData.get(i), 16), trainingVectors, 5));
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        /*for (Map.Entry<String, ListDataset<FImage>> testImage: splits.getTestDataset().entrySet() ){
             for (FImage randomInstance : testImage.getValue()) {
                 System.out.println(testImage.getKey());
-                        String prediction = KNNClassifier(cropImage(randomInstance, 16), trainingVectors, 3);
-                System.out.println(prediction);
+                        String prediction = KNNClassifier(cropImage(randomInstance, 16), trainingVectors, 5);
+                System.out.println(prediction + " " + testImage.getKey());
                 if (prediction.equals(testImage.getKey()))
                     correct++;
                 else
                     incorrect++;
             }
         }
-        System.out.println(correct + " " + incorrect);
-         */
-        for (FImage image : App.testingData){
-            System.out.println(image.getHeight());
-            System.out.println(image.getWidth());
-        }
-        for (FImage image : App.testingData){
-            System.out.println(image.getHeight());
-            System.out.println(image.getWidth());
-            System.out.println(KNNClassifier(cropImage(image, 16), trainingVectors, 3));
-        }
+        System.out.println(correct + " " + incorrect);*/
+
+
     }
     //cropping image to a square about the centre
     private static FImage cropImage(FImage fullSized, int imageSize) {
