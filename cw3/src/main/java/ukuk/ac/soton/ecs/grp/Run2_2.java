@@ -128,9 +128,10 @@ public class Run2_2 {
         }
 
         /**
-         * Overrides the extraFeature method in the interface FeatureExtractor
+         * Overrides the extractFeature method in the interface FeatureExtractor
          * @param object this is the object we want to extract the features from (in our case this would be FImages.)
-         * @return returns a SparseIntFV from BagOfVisualWords' method aggregrateVectorsRaw from our patchlist.
+         * @return returns a SparseIntFV from BagOfVisualWords' method aggregrateVectorsRaw using our patchlist as it's
+         * features
          */
         @Override
         public SparseIntFV extractFeature(FImage object) {

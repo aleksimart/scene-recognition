@@ -150,11 +150,11 @@ public class Run1 {
     }
 
     /**
-     *
+     * Calculates the K nearest neighbours from the training map to the test image's vectors.
      * @param testImage: FImage, This is the image to classify into the categories
      * @param trainingMap: Map<String,float[][]>, This is all of the float vectors from the training set with their category labels
      * @param k: int, the value of k used for the k nearest algorithm
-     * @return String, the classifier result using KNN and taking the closest when it is a draw
+     * @return String, the classifier result using KNN and taking the closest when it is a draw. Outputs the classification as a string.
      */
     private static String KNNClassifier(FImage testImage, Map<String, float[][]> trainingMap, int k) {
         HashMap<Float, String> distanceMap = new HashMap<Float, String>();
@@ -226,7 +226,7 @@ public class Run1 {
     }
 
     /**
-     * Uses Pythagoras to calculate the distance in 2D space
+     * Uses Pythagoras to calculate the distance in 16D space
      * @param v1 float value of the pixel from one image
      * @param v2 float value fo the pixel from another image
      * @return the distance between these two vectors
@@ -240,7 +240,7 @@ public class Run1 {
     }
 
     /**
-     * Method turns an image from an FImage into a representing vector that is packed.
+     * Method turns an image from an FImage into a representing vector that is packed such that each row is represented by a float
      * @param originalImage FImage, image to be vectorised
      * @return float[], The pixel values packed into a vector by concatenating each image row
      */
